@@ -37,19 +37,24 @@ android {
 }
 
 dependencies {
-    // Core
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.activity:activity-compose:1.9.3")
 
-    // Compose
     implementation(platform("androidx.compose:compose-bom:2024.11.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
-
-    // ★ INI YANG BARU — icon extended (Description, DocumentScanner, dll)
     implementation("androidx.compose.material:material-icons-extended")
 
     // ML Kit Document Scanner
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+
+    // ★ BARU — OCR
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // ★ BARU — PDF manipulation (pisah, gabung)
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    // ★ BARU — buat Tasks.await() di OCR
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
 }
