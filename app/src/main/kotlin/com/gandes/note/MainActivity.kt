@@ -17,7 +17,6 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -67,7 +66,6 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -464,14 +462,14 @@ private val PremiumLight = lightColorScheme(
 
 // ═══════════════ PASTEL COLORS ═══════════════
 val PastelColors = listOf(
-    Color(0xFFFFF4C4), // kuning
-    Color(0xFFFFD7E0), // pink
-    Color(0xFFD8F0D8), // hijau
-    Color(0xFFD5E7FF), // biru
-    Color(0xFFE8DFFF), // ungu
-    Color(0xFFFFE0CE), // oranye
-    Color(0xFFCDEFF5), // cyan
-    Color(0xFFFFE5B4)  // peach
+    Color(0xFFFFF4C4),
+    Color(0xFFFFD7E0),
+    Color(0xFFD8F0D8),
+    Color(0xFFD5E7FF),
+    Color(0xFFE8DFFF),
+    Color(0xFFFFE0CE),
+    Color(0xFFCDEFF5),
+    Color(0xFFFFE5B4)
 )
 
 fun colorForId(id: String): Color {
@@ -520,27 +518,16 @@ fun GandesRoot(
     isDark: Boolean,
     onToggleTheme: () -> Unit
 ) {
-    val context = LocalContext.current
     var tab by remember { mutableStateOf(Tab.HOME) }
     var subScreen by remember { mutableStateOf(SubScreen.NONE) }
     var refreshKey by remember { mutableStateOf(0) }
     var previewDoc by remember { mutableStateOf<DocItem?>(null) }
-    var fABPressed by remember { mutableStateOf(false) }
-
-    val fabScale by animateFloatAsState(
-        targetValue = if (fABPressed) 0.92f else 1f,
-        animationSpec = tween(120),
-        label = "fab"
-    )
 
     Scaffold(
         floatingActionButton = {
             if (subScreen == SubScreen.NONE && tab == Tab.HOME) {
                 FloatingActionButton(
-                    onClick = {
-                        fABPressed = !fABPressed
-                        subScreen = SubScreen.SCANNER
-                    },
+                    onClick = { subScreen = SubScreen.SCANNER },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = CircleShape
@@ -700,7 +687,6 @@ fun HomeTab(
     onToggleTheme: () -> Unit,
     onOpenDoc: (DocItem) -> Unit
 ) {
-    val context = LocalContext.current
     var notes by remember { mutableStateOf(store.loadNotes()) }
     var docs by remember { mutableStateOf(store.loadDocs()) }
     var input by remember { mutableStateOf("") }
@@ -717,7 +703,6 @@ fun HomeTab(
         .take(3)
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        // Header gradient
         GradientHeader(
             isDark = isDark,
             docCount = docs.size,
@@ -729,7 +714,6 @@ fun HomeTab(
         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Spacer(Modifier.height(16.dp))
 
-            // Search
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -747,7 +731,6 @@ fun HomeTab(
 
             Spacer(Modifier.height(20.dp))
 
-            // Quick input
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = input,
@@ -792,7 +775,6 @@ fun HomeTab(
 
             Spacer(Modifier.height(24.dp))
 
-            // Section: Dokumen terbaru
             if (filteredDocs.isNotEmpty()) {
                 SectionHeader(
                     title = if (query.isBlank()) "Dokumen Terbaru" else "Hasil Pencarian",
@@ -800,12 +782,11 @@ fun HomeTab(
                 )
                 Spacer(Modifier.height(12.dp))
 
-                LazyVerticalGridHorizontalPlaceholder(docs = filteredDocs, onOpen = onOpenDoc)
+                GridRow(docs = filteredDocs, onOpen = onOpenDoc)
 
                 Spacer(Modifier.height(24.dp))
             }
 
-            // Section: Catatan terbaru
             if (filteredNotes.isNotEmpty()) {
                 SectionHeader(
                     title = if (query.isBlank()) "Catatan Terbaru" else "Catatan Cocok",
@@ -830,7 +811,6 @@ fun HomeTab(
                 Spacer(Modifier.height(24.dp))
             }
 
-            // Empty state
             if (filteredDocs.isEmpty() && filteredNotes.isEmpty()) {
                 EmptyState(
                     title = if (query.isBlank()) "Mulai Perjalanan Kamu" else "Tidak ada hasil",
@@ -871,7 +851,6 @@ fun GradientHeader(
                 )
             )
     ) {
-        // Glow
         Box(
             modifier = Modifier
                 .size(220.dp)
@@ -932,18 +911,23 @@ fun GradientHeader(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                StatPill(value = "$docCount", label = "Dokumen", isDark = isDark)
-                StatPill(value = "$noteCount", label = "Catatan", isDark = isDark)
-                StatPill(value = storageStr, label = "Terpakai", isDark = isDark)
+                StatPill(modifier = Modifier.weight(1f), value = "$docCount", label = "Dokumen", isDark = isDark)
+                StatPill(modifier = Modifier.weight(1f), value = "$noteCount", label = "Catatan", isDark = isDark)
+                StatPill(modifier = Modifier.weight(1f), value = storageStr, label = "Terpakai", isDark = isDark)
             }
         }
     }
 }
 
 @Composable
-fun StatPill(value: String, label: String, isDark: Boolean) {
+fun StatPill(
+    modifier: Modifier = Modifier,
+    value: String,
+    label: String,
+    isDark: Boolean
+) {
     Card(
-        modifier = Modifier.weight(1f),
+        modifier = modifier,
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isDark) Color.White.copy(alpha = 0.06f)
@@ -990,8 +974,7 @@ fun SectionHeader(title: String, subtitle: String) {
 }
 
 @Composable
-fun LazyVerticalGridHorizontalPlaceholder(docs: List<DocItem>, onOpen: (DocItem) -> Unit) {
-    // Grid horizontal sederhana pakai Row (biar gak nested scroll)
+fun GridRow(docs: List<DocItem>, onOpen: (DocItem) -> Unit) {
     Column {
         docs.chunked(2).forEach { rowDocs ->
             Row(
@@ -1014,7 +997,6 @@ fun LazyVerticalGridHorizontalPlaceholder(docs: List<DocItem>, onOpen: (DocItem)
 
 @Composable
 fun DocThumbCard(doc: DocItem, onOpen: () -> Unit) {
-    val context = LocalContext.current
     val file = remember(doc.id) { File(doc.path) }
 
     val thumbnail by produceState<Bitmap?>(initialValue = null, doc.id) {
@@ -1118,7 +1100,6 @@ fun DocsTab(store: NoteStore, onOpenDoc: (DocItem) -> Unit) {
         else docs.filter { it.name.contains(query, ignoreCase = true) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header
         Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
             Text(
                 "Dokumen",
@@ -1167,7 +1148,6 @@ fun DocsTab(store: NoteStore, onOpenDoc: (DocItem) -> Unit) {
                     Box {
                         DocThumbCard(doc = doc, onOpen = { onOpenDoc(doc) })
 
-                        // Menu tombol
                         Row(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
@@ -1527,7 +1507,6 @@ fun EmptyState(title: String, message: String) {
         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 60.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Ilustrasi — lingkaran konsentrik dengan icon di tengah
         Box(contentAlignment = Alignment.Center) {
             Box(
                 modifier = Modifier
