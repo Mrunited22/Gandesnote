@@ -47,6 +47,9 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
 
+    // ★ INI YANG BARU — icon extended (Description, DocumentScanner, dll)
+    implementation("androidx.compose.material:material-icons-extended")
+
     // ML Kit Document Scanner
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
 }
